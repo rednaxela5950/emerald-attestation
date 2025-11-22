@@ -13,17 +13,17 @@ When finishing a step, mark it `[x]` and add a brief “Result” section to the
 
 ## Step 0 — Repo bootstrap & environment
 
-- [ ] 0.1 Create repo structure:
+- [~] 0.1 Create repo structure:
   - `/contracts` for Solidity contracts.
   - `/contracts/test` (if using Foundry, `test/` at root).
   - `/packages/emerald-da-worker` for the off-chain worker.
   - `/apps/frontend` for the demo UI.
   - `/docs` for this plan and step specs.
-- [ ] 0.2 Initialize tooling:
+- [~] 0.2 Initialize tooling:
   - Foundry or Hardhat for contracts.
   - Node + TypeScript toolchain (pnpm or npm).
-- [ ] 0.3 Add basic `README.md` with project summary and how to run tests.
-- [ ] 0.4 Commit initial scaffold (`chore: bootstrap project`).
+- [~] 0.3 Add basic `README.md` with project summary and how to run tests.
+- [~] 0.4 Commit initial scaffold (`chore: bootstrap project`).
 
 **Detailed spec:** `docs/STEP-0-BOOTSTRAP.md` (create when starting this step).
 
