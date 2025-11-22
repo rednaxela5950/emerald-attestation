@@ -1,0 +1,13 @@
+{
+  "name": "emerald-attestation",
+  "private": true,
+  "version": "0.0.1",
+  "packageManager": "pnpm@8.15.6",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}
