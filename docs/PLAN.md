@@ -33,7 +33,7 @@ When finishing a step, mark it `[x]` and add a brief “Result” section to the
 
 Goal: Have on-chain contracts that represent posts, their DA status, and the adapter entry point for Relay, with no actual Symbiotic integration yet (just interfaces and events).
 
-- [ ] 1.1 Design `EmeraldPostRegistry` (or `EmeraldBoardDemo`):
+- [~] 1.1 Design `EmeraldPostRegistry` (or `EmeraldBoardDemo`):
   - Define `Post` struct: `postId`, `cidHash`, `kzgCommit`, `status`.
   - Define `Status` enum: `Pending`, `Phase1Failed`, `Phase1Passed`, `Available`, `Unavailable`, `Inconclusive`.
   - Implement:
@@ -42,7 +42,7 @@ Goal: Have on-chain contracts that represent posts, their DA status, and the ada
     - Restricted setter `setStatusFromDa` callable only by DA adapter.
   - Emit `PostCreated` and `PostStatusChanged` events.
 
-- [ ] 1.2 Design `EmeraldDaAdapter` interface:
+- [~] 1.2 Design `EmeraldDaAdapter` interface:
   - Storage for:
     - Mapping from `postId` to Phase 1 DA state (timestamps, yesStake, totalStake, yesVoters).
     - Custody challenge data structure placeholders.
@@ -53,16 +53,16 @@ Goal: Have on-chain contracts that represent posts, their DA status, and the ada
     - `CustodyProofSubmitted(postId, operator, success)`
     - `PostFinalized(postId, finalStatus)`
 
-- [ ] 1.3 Create `MockKzgVerifier` contract:
+- [~] 1.3 Create `MockKzgVerifier` contract:
   - Define `verifyKzgOpening` function signature.
   - For now, return a configurable boolean or always `true` (with tests simulating failure via alternate mocks).
 
-- [ ] 1.4 Write Foundry tests (or equivalent) for:
+- [~] 1.4 Write Foundry tests (or equivalent) for:
   - `createPost` behaviour.
   - Status transitions triggered by stubbed calls from `EmeraldDaAdapter`.
   - Basic interaction pattern between registry and adapter (without real Relay yet).
 
-- [ ] 1.5 Commit with message like `feat: add core Emerald DA contracts (Phase1 shell)`.
+- [~] 1.5 Commit with message like `feat: add core Emerald DA contracts (Phase1 shell)`.
 
 **Detailed spec:** `docs/STEP-1-DA-CONTRACTS.md`.
 
