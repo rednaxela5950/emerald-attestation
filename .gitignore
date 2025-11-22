@@ -9,3 +9,4 @@ lib/
 .env
 .env.*
 .DS_Store
+AGENTS.md
