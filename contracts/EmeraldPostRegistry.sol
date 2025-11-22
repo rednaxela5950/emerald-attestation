@@ -5,6 +5,7 @@ import "./EmeraldTypes.sol";
 
 contract EmeraldPostRegistry {
     event PostCreated(bytes32 indexed postId, bytes32 cidHash, bytes32 kzgCommit, address indexed author);
+    event PostStatusChanged(bytes32 indexed postId, Status newStatus);
 
     address public immutable daAdapter;
     mapping(bytes32 => Post) private posts;
@@ -23,5 +24,14 @@ contract EmeraldPostRegistry {
 
     function getPost(bytes32 postId) external view returns (Post memory) {
         return posts[postId];
+    }
+
+    function setStatusFromDa(bytes32 postId, Status newStatus) external {
+        require(msg.sender == daAdapter, "NOT_ADAPTER");
+        Post storage post = posts[postId];
+        require(post.postId != bytes32(0), "POST_MISSING");
+
+        post.status = newStatus;
+        emit PostStatusChanged(postId, newStatus);
     }
 }
