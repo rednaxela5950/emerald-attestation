@@ -12,6 +12,7 @@ Progress:
 - Added Express-based in-memory blob service with POST/GET endpoints under `packages/emerald-da-worker`.
 - Added `processPost` worker helper to fetch blobs, check cid hash, and tests covering ok/mismatch/missing paths.
 - Added config/env placeholders for blob service, RPC, and registry address to prep event wiring.
+- Added registry log parser for `PostCreated` to prep event-driven worker flow.
 
 Next:
 - Hook worker stub to on-chain events (PostCreated, custody) and simulate Relay/custody responses.
