@@ -22,3 +22,7 @@ export function createBlobApp() {
 
   return app;
 }
+
+export function setBlobForTest(cidHash: string, blob: Buffer) {
+  blobs.set(cidHash, blob);
+}

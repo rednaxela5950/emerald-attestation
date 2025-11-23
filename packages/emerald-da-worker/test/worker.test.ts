@@ -2,7 +2,7 @@ import assert from "assert";
 import http from "http";
 import { AddressInfo } from "net";
 import { fetch } from "undici";
-import { createBlobApp } from "../src/blobService";
+import { createBlobApp, setBlobForTest } from "../src/blobService";
 import { processPost } from "../src/worker";
 
 async function postBlob(baseUrl: string, data: Buffer): Promise<string> {
@@ -21,6 +21,10 @@ async function main() {
         const cidHash = await postBlob(baseUrl, Buffer.from("hello"));
         const ok = await processPost({ postId: "0x1", cidHash, kzgCommit: "0x0" }, baseUrl);
         assert.strictEqual(ok, "ok");
+
+        setBlobForTest(cidHash, Buffer.from("tampered"));
+        const mismatch = await processPost({ postId: "0x1", cidHash, kzgCommit: "0x0" }, baseUrl);
+        assert.strictEqual(mismatch, "mismatch");
 
         const missing = await processPost({ postId: "0x2", cidHash: "0xbeef", kzgCommit: "0x0" }, baseUrl);
         assert.strictEqual(missing, "missing");
