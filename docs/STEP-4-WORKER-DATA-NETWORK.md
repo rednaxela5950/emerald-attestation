@@ -7,3 +7,6 @@ Plan:
 - Create `packages/emerald-da-worker` entry that watches registry events, fetches blobs, and stubs Relay/custody responses.
 - Add minimal tests (unit or integration) to cover honest vs lazy worker behaviour.
 - Wire scripts/config for local dev (run service, run worker).
+
+Progress:
+- Added Express-based in-memory blob service with POST/GET endpoints under `packages/emerald-da-worker`.
