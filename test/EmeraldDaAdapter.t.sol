@@ -55,4 +55,26 @@ contract EmeraldDaAdapterTest is TestBase {
         EmeraldDaAdapter.CustodyChallenge[] memory challenges = adapter.getCustodyChallenges(postId);
         assertEq(challenges.length, 0, "custody defaults empty");
     }
+
+    function testStartCustodyChallengesCreatesEntries() external {
+        bytes32 cidHash = keccak256("cid3");
+        bytes32 kzgCommit = keccak256("kzg3");
+        bytes32 postId = registry.createPost(cidHash, kzgCommit);
+        address[] memory voters = new address[](2);
+        voters[0] = address(0x1);
+        voters[1] = address(0x2);
+        adapter.handleDaAttestation(postId, cidHash, kzgCommit, voters, 2, 2);
+
+        adapter.startCustodyChallenges(postId);
+        EmeraldDaAdapter.CustodyChallenge[] memory challenges = adapter.getCustodyChallenges(postId);
+        assertEq(challenges.length, 2, "challenges length");
+        assertEq(challenges[0].operator, voters[0], "operator 0");
+        assertTrue(!challenges[0].responded, "not responded");
+    }
+
+    function testStartCustodyChallengesRequiresPhase1() external {
+        bytes32 postId = registry.createPost(keccak256("cid4"), keccak256("kzg4"));
+        vm.expectRevert("NOT_PHASE1");
+        adapter.startCustodyChallenges(postId);
+    }
 }

@@ -55,6 +55,23 @@ contract EmeraldDaAdapter {
         return yesStake >= (totalStake + 1) / 2;
     }
 
+    function startCustodyChallenges(bytes32 postId) external {
+        Post memory post = registry.getPost(postId);
+        require(post.status == Status.Phase1Passed, "NOT_PHASE1");
+        require(custodyChallenges[postId].length == 0, "ALREADY_STARTED");
+
+        Phase1State storage state = phase1States[postId];
+        uint256 votersLen = state.yesVoters.length;
+        require(votersLen > 0, "NO_VOTERS");
+
+        for (uint256 i = 0; i < votersLen; i++) {
+            address operator = state.yesVoters[i];
+            uint256 challengeIndex = uint256(keccak256(abi.encodePacked(postId, operator, i)));
+            custodyChallenges[postId].push(CustodyChallenge(operator, challengeIndex, false, false));
+            emit CustodyChallengeStarted(postId, operator, challengeIndex);
+        }
+    }
+
     modifier onlyRelay() {
         require(msg.sender == relay, "NOT_RELAY");
         _;

@@ -100,7 +100,7 @@ Goal: Wire `EmeraldDaAdapter` to accept and process a Symbiotic Relay DA attesta
 
 Goal: Implement the second phase where a random subset of yes‑voters must answer custody challenges derived from `kzgCommit`, using mocked KZG verification.
 
-- [ ] 3.1 Define challenge storage:
+- [~] 3.1 Define challenge storage:
   - `struct CustodyChallenge { address operator; uint256 challengeIndex; bool responded; bool success; }`
   - `mapping(bytes32 => CustodyChallenge[]) challenges;`
   - Simple randomness mechanism (blockhash-based) to:
@@ -108,7 +108,7 @@ Goal: Implement the second phase where a random subset of yes‑voters must answ
     - Select subset of yesVoters.
     - Derive a `challengeIndex` per operator.
 
-- [ ] 3.2 Implement:
+- [~] 3.2 Implement:
   - `startCustodyChallenges(postId)`:
     - Require `Phase1Passed`.
     - Sample operators and store their challenges.
@@ -119,7 +119,7 @@ Goal: Implement the second phase where a random subset of yes‑voters must answ
     - Mark `responded` and set `success`.
     - Emit `CustodyProofSubmitted`.
 
-- [ ] 3.3 Implement `finalizePostFromCustody(postId)`:
+- [~] 3.3 Implement `finalizePostFromCustody(postId)`:
   - Only callable after challenge deadline.
   - Count successful vs challenged operators.
   - Decide final post status:
@@ -127,12 +127,12 @@ Goal: Implement the second phase where a random subset of yes‑voters must answ
     - Else → `Unavailable` or `Inconclusive`.
   - Update `EmeraldPostRegistry` status and emit `PostFinalized`.
 
-- [ ] 3.4 Tests:
+- [~] 3.4 Tests:
   - Scenario where all challenged operators respond successfully → post becomes `Available`.
   - Scenario where many fail / don’t respond → post becomes `Unavailable`.
   - Scenario where Phase 1 passed but `startCustodyChallenges` is never called (ensure it’s guarded correctly).
 
-- [ ] 3.5 Commit with message like `feat: add custody challenge logic with mock KZG verifier`.
+- [~] 3.5 Commit with message like `feat: add custody challenge logic with mock KZG verifier`.
 
 **Detailed spec:** `docs/STEP-3-CUSTODY-CHALLENGES.md`.
 
