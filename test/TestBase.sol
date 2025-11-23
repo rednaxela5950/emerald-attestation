@@ -16,6 +16,10 @@ abstract contract TestBase {
         if (a != b) revert(message);
     }
 
+    function assertEq(address a, address b, string memory message) internal pure {
+        if (a != b) revert(message);
+    }
+
     function assertTrue(bool condition, string memory message) internal pure {
         if (!condition) revert(message);
     }
