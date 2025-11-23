@@ -3,7 +3,7 @@ import http from "http";
 import { AddressInfo } from "net";
 import { fetch } from "undici";
 import { createBlobApp, setBlobForTest } from "../src/blobService";
-import { decideOnPost, processPost } from "../src/worker";
+import { decideOnPost, handlePostCreated, processPost } from "../src/worker";
 
 async function postBlob(baseUrl: string, data: Buffer): Promise<string> {
     const res = await fetch(`${baseUrl}/blob`, { method: "POST", body: data, headers: { "content-type": "application/octet-stream" } });
@@ -23,6 +23,9 @@ async function main() {
         assert.strictEqual(ok, "ok");
         const decisionOk = await decideOnPost({ postId: "0x1", cidHash, kzgCommit: "0x0" }, baseUrl);
         assert.strictEqual(decisionOk.decision, "yes");
+
+        const handled = await handlePostCreated({ postId: "0x3", cidHash, kzgCommit: "0x0" }, baseUrl);
+        assert.strictEqual(handled.decision, "yes");
 
         setBlobForTest(cidHash, Buffer.from("tampered"));
         const mismatch = await processPost({ postId: "0x1", cidHash, kzgCommit: "0x0" }, baseUrl);

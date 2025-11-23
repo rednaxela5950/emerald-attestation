@@ -20,3 +20,7 @@ export async function decideOnPost(post: PostInput, baseUrl: string): Promise<De
     if (result === "ok") return { decision: "yes", reason: result };
     return { decision: "no", reason: result };
 }
+
+export async function handlePostCreated(post: PostInput, baseUrl: string): Promise<Decision> {
+    return decideOnPost(post, baseUrl);
+}
