@@ -3,6 +3,7 @@ import { handlePostCreated } from "./worker";
 import { loadConfig } from "./config";
 import { createProvider, subscribeToLogs } from "./provider";
 import { parsePostCreated } from "./registry";
+import { parseCustodyChallenge } from "./adapter";
 
 export async function main() {
   const app = createBlobApp();
@@ -11,8 +12,8 @@ export async function main() {
 
   const cfg = loadConfig();
   console.log(`worker ready, blob service ${cfg.blobServiceUrl}, rpc ${cfg.rpcUrl}, registry ${cfg.registryAddress || "(not set)"}`);
-  if (!cfg.registryAddress) {
-    console.warn("REGISTRY_ADDRESS not set; skipping on-chain subscription");
+  if (!cfg.registryAddress || !cfg.adapterAddress) {
+    console.warn("REGISTRY_ADDRESS or ADAPTER_ADDRESS not set; skipping on-chain subscription");
     return;
   }
 
@@ -26,6 +27,18 @@ export async function main() {
         cfg.blobServiceUrl,
         cfg.lazyMode
       );
+    }
+  });
+
+  subscribeToLogs(provider, cfg.adapterAddress, [], async (log) => {
+    const chall = parseCustodyChallenge(log);
+    if (chall) {
+      console.log(`CustodyChallenge for ${chall.postId} operator ${chall.operator} index ${chall.challengeIndex}`);
+      if (cfg.lazyMode) {
+        console.log("Lazy mode: skipping custody proof");
+      } else {
+        console.log("Would submit custody proof here (stub)");
+      }
     }
   });
 }
