@@ -11,24 +11,43 @@ contract EmeraldDaAdapterTest is TestBase {
     EmeraldDaAdapter private adapter;
 
     function setUp() external {
-        adapter = new EmeraldDaAdapter(EmeraldPostRegistry(address(0)));
+        adapter = new EmeraldDaAdapter(EmeraldPostRegistry(address(0)), address(this));
         registry = new EmeraldPostRegistry(address(adapter));
         adapter.setRegistry(registry);
     }
 
-    function testHandlePhase1ResultUpdatesRegistryAndState() external {
+    function testHandleDaAttestationUpdatesRegistryAndState() external {
         bytes32 cidHash = keccak256("cid");
         bytes32 kzgCommit = keccak256("kzg");
         bytes32 postId = registry.createPost(cidHash, kzgCommit);
         address[] memory voters = new address[](1);
         voters[0] = address(0x1);
-        adapter.handlePhase1Result(postId, cidHash, kzgCommit, voters, 2, 3, true);
+        adapter.handleDaAttestation(postId, cidHash, kzgCommit, voters, 2, 3);
         Post memory post = registry.getPost(postId);
         assertEq(uint256(post.status), uint256(Status.Phase1Passed), "status");
         EmeraldDaAdapter.Phase1State memory state = adapter.getPhase1State(postId);
         assertEq(state.yesStake, 2, "yesStake");
         assertEq(state.totalStake, 3, "totalStake");
         assertEq(state.yesVoters.length, 1, "voters length");
+    }
+
+    function testHandleDaAttestationFailsWhenStakeLow() external {
+        bytes32 cidHash = keccak256("cid");
+        bytes32 kzgCommit = keccak256("kzg");
+        bytes32 postId = registry.createPost(cidHash, kzgCommit);
+        address[] memory voters = new address[](1);
+        voters[0] = address(0x1);
+        adapter.handleDaAttestation(postId, cidHash, kzgCommit, voters, 1, 3);
+        Post memory post = registry.getPost(postId);
+        assertEq(uint256(post.status), uint256(Status.Phase1Failed), "status fail");
+    }
+
+    function testHandleDaAttestationRejectsMismatch() external {
+        bytes32 cidHash = keccak256("cid");
+        bytes32 kzgCommit = keccak256("kzg");
+        bytes32 postId = registry.createPost(cidHash, kzgCommit);
+        vm.expectRevert("POST_MISMATCH");
+        adapter.handleDaAttestation(postId, keccak256("other"), kzgCommit, new address[](0), 1, 1);
     }
 
     function testCustodyChallengesDefaultEmpty() external {

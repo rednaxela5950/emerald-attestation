@@ -15,21 +15,28 @@ contract EmeraldDaAdapter {
     event PostFinalized(bytes32 indexed postId, Status finalStatus);
 
     EmeraldPostRegistry public registry;
+    address public relay;
     mapping(bytes32 => Phase1State) private phase1States;
     mapping(bytes32 => CustodyChallenge[]) private custodyChallenges;
 
-    constructor(EmeraldPostRegistry registry_) { registry = registry_; }
+    constructor(EmeraldPostRegistry registry_, address relay_) {
+        registry = registry_;
+        relay = relay_;
+    }
 
     function setRegistry(EmeraldPostRegistry registry_) external {
         require(address(registry) == address(0), "REGISTRY_SET");
         registry = registry_;
     }
 
-    function handlePhase1Result(bytes32 postId, bytes32 cidHash, bytes32 kzgCommit, address[] calldata yesVoters, uint256 yesStake, uint256 totalStake, bool passed) external {
+    function handleDaAttestation(bytes32 postId, bytes32 cidHash, bytes32 kzgCommit, address[] calldata yesVoters, uint256 yesStake, uint256 totalStake) external onlyRelay {
         require(address(registry) != address(0), "REGISTRY_MISSING");
         Post memory post = registry.getPost(postId);
         require(post.postId != bytes32(0), "POST_MISSING");
         require(post.cidHash == cidHash && post.kzgCommit == kzgCommit, "POST_MISMATCH");
+        require(yesStake > 0 && totalStake > 0, "STAKE_ZERO");
+
+        bool passed = _passesThreshold(yesStake, totalStake);
         phase1States[postId] = Phase1State(yesStake, totalStake, yesVoters);
         registry.setStatusFromDa(postId, passed ? Status.Phase1Passed : Status.Phase1Failed);
         if (passed) emit Phase1DaPassed(postId, yesStake, totalStake);
@@ -42,5 +49,14 @@ contract EmeraldDaAdapter {
 
     function getCustodyChallenges(bytes32 postId) external view returns (CustodyChallenge[] memory) {
         return custodyChallenges[postId];
+    }
+
+    function _passesThreshold(uint256 yesStake, uint256 totalStake) private pure returns (bool) {
+        return yesStake >= (totalStake + 1) / 2;
+    }
+
+    modifier onlyRelay() {
+        require(msg.sender == relay, "NOT_RELAY");
+        _;
     }
 }
