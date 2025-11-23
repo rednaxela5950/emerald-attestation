@@ -30,4 +30,10 @@ contract EmeraldDaAdapterTest is TestBase {
         assertEq(state.totalStake, 3, "totalStake");
         assertEq(state.yesVoters.length, 1, "voters length");
     }
+
+    function testCustodyChallengesDefaultEmpty() external {
+        bytes32 postId = registry.createPost(keccak256("cid2"), keccak256("kzg2"));
+        EmeraldDaAdapter.CustodyChallenge[] memory challenges = adapter.getCustodyChallenges(postId);
+        assertEq(challenges.length, 0, "custody defaults empty");
+    }
 }
