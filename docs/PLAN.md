@@ -142,12 +142,12 @@ Goal: Implement the second phase where a random subset of yes‑voters must answ
 
 Goal: Provide an off-chain worker that ties blobs, Relay attestation, and on-chain contracts together, plus a simple storage service.
 
-- [ ] 4.1 Implement dummy data service:
+- [~] 4.1 Implement dummy data service:
   - Node + Express/Fastify.
   - `POST /blob` → stores blob in memory/disk; returns `cidHash`.
   - `GET /blob/:cidHash` → returns blob or 404.
 
-- [ ] 4.2 Implement `emerald-da-worker`:
+- [~] 4.2 Implement `emerald-da-worker`:
   - Watches `PostCreated` events.
   - For each new post:
     - Fetch blob from dummy data service using `cidHash`.
@@ -156,11 +156,11 @@ Goal: Provide an off-chain worker that ties blobs, Relay attestation, and on-cha
   - Watches custody challenge events:
     - If this worker corresponds to a challenged operator, compute dummy `(x, y, pi)` and call `submitCustodyProof`.
 
-- [ ] 4.3 Tests (unit/integration):
+- [~] 4.3 Tests (unit/integration):
   - Worker behaves honestly when blob exists and matches.
   - Worker acts “lazy” in tests (signs yes but fails custody) and ensure on-chain logic flags this as failure.
 
-- [ ] 4.4 Commit with message like `feat: add dummy data network and Emerald DA worker`.
+- [~] 4.4 Commit with message like `feat: add dummy data network and Emerald DA worker`.
 
 **Detailed spec:** `docs/STEP-4-WORKER-DATA-NETWORK.md`.
 
