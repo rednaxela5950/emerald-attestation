@@ -11,3 +11,4 @@ Plan:
 Progress:
 - Added `EmeraldPostRegistry` create/get with pending status default and `PostCreated` event.
 - Added DA-only status setter on registry with `PostStatusChanged` event and tests.
+- Added `EmeraldDaAdapter` Phase 1 handler storing stakes/voters and updating registry status.
