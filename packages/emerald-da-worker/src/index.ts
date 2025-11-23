@@ -1,6 +1,8 @@
 import { createBlobApp } from "./blobService";
 import { handlePostCreated } from "./worker";
 import { loadConfig } from "./config";
+import { createProvider, subscribeToLogs } from "./provider";
+import { parsePostCreated } from "./registry";
 
 export async function main() {
   const app = createBlobApp();
@@ -9,10 +11,19 @@ export async function main() {
 
   const cfg = loadConfig();
   console.log(`worker ready, blob service ${cfg.blobServiceUrl}, rpc ${cfg.rpcUrl}, registry ${cfg.registryAddress || "(not set)"}`);
-  // Example: process a dummy post (placeholder for event wiring).
-  await handlePostCreated({ postId: "0x0", cidHash: "0x0", kzgCommit: "0x0" }, cfg.blobServiceUrl).catch((err) =>
-    console.warn("handlePostCreated demo failed (expected without data)", err.message)
-  );
+  if (!cfg.registryAddress) {
+    console.warn("REGISTRY_ADDRESS not set; skipping on-chain subscription");
+    return;
+  }
+
+  const provider = createProvider();
+  subscribeToLogs(provider, cfg.registryAddress, [], async (log) => {
+    const event = parsePostCreated(log);
+    if (event) {
+      console.log(`PostCreated received for ${event.postId}`);
+      await handlePostCreated({ postId: event.postId, cidHash: event.cidHash, kzgCommit: event.kzgCommit }, cfg.blobServiceUrl);
+    }
+  });
 }
 
 if (require.main === module) {
