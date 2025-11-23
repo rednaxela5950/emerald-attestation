@@ -1,6 +1,6 @@
 # Step 1 — DA data model & core contracts
 
-Status: In progress
+Status: Done
 
 Plan:
 - Define `EmeraldPostRegistry` data model and events.
@@ -13,3 +13,8 @@ Progress:
 - Added DA-only status setter on registry with `PostStatusChanged` event and tests.
 - Added `EmeraldDaAdapter` Phase 1 handler storing stakes/voters, custody placeholders, and updating registry status.
 - Added `MockKzgVerifier` with toggleable result for custody tests later.
+
+Result:
+- Registry now tracks posts with DA-only status updates and emits creation/status events.
+- Adapter stores Phase 1 stake data, custody placeholders, and drives registry status changes.
+- Mock KZG verifier toggles pass/fail; tests cover registry create/status flows and adapter Phase 1 handling.
