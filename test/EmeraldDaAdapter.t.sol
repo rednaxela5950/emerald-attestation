@@ -4,14 +4,17 @@ pragma solidity ^0.8.20;
 import "../contracts/EmeraldDaAdapter.sol";
 import "../contracts/EmeraldPostRegistry.sol";
 import "../contracts/EmeraldTypes.sol";
+import "../contracts/MockKzgVerifier.sol";
 import "./TestBase.sol";
 
 contract EmeraldDaAdapterTest is TestBase {
     EmeraldPostRegistry private registry;
     EmeraldDaAdapter private adapter;
+    MockKzgVerifier private verifier;
 
     function setUp() external {
-        adapter = new EmeraldDaAdapter(EmeraldPostRegistry(address(0)), address(this));
+        verifier = new MockKzgVerifier();
+        adapter = new EmeraldDaAdapter(EmeraldPostRegistry(address(0)), address(this), verifier);
         registry = new EmeraldPostRegistry(address(adapter));
         adapter.setRegistry(registry);
     }
@@ -76,5 +79,20 @@ contract EmeraldDaAdapterTest is TestBase {
         bytes32 postId = registry.createPost(keccak256("cid4"), keccak256("kzg4"));
         vm.expectRevert("NOT_PHASE1");
         adapter.startCustodyChallenges(postId);
+    }
+
+    function testSubmitCustodyProofMarksResponded() external {
+        bytes32 cidHash = keccak256("cid5");
+        bytes32 kzgCommit = keccak256("kzg5");
+        bytes32 postId = registry.createPost(cidHash, kzgCommit);
+        address[] memory voters = new address[](1);
+        voters[0] = address(0x1);
+        adapter.handleDaAttestation(postId, cidHash, kzgCommit, voters, 1, 1);
+        adapter.startCustodyChallenges(postId);
+
+        adapter.submitCustodyProof(postId, voters[0], "", "", "");
+        EmeraldDaAdapter.CustodyChallenge[] memory challenges = adapter.getCustodyChallenges(postId);
+        assertTrue(challenges[0].responded, "responded");
+        assertTrue(challenges[0].success, "success");
     }
 }

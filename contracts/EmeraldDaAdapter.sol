@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import "./EmeraldPostRegistry.sol";
 import "./EmeraldTypes.sol";
+import "./MockKzgVerifier.sol";
 
 contract EmeraldDaAdapter {
     struct Phase1State { uint256 yesStake; uint256 totalStake; address[] yesVoters; }
@@ -16,12 +17,14 @@ contract EmeraldDaAdapter {
 
     EmeraldPostRegistry public registry;
     address public relay;
+    MockKzgVerifier public verifier;
     mapping(bytes32 => Phase1State) private phase1States;
     mapping(bytes32 => CustodyChallenge[]) private custodyChallenges;
 
-    constructor(EmeraldPostRegistry registry_, address relay_) {
+    constructor(EmeraldPostRegistry registry_, address relay_, MockKzgVerifier verifier_) {
         registry = registry_;
         relay = relay_;
+        verifier = verifier_;
     }
 
     function setRegistry(EmeraldPostRegistry registry_) external {
@@ -72,8 +75,29 @@ contract EmeraldDaAdapter {
         }
     }
 
+    function submitCustodyProof(bytes32 postId, address operator, bytes calldata x, bytes calldata y, bytes calldata pi) external {
+        CustodyChallenge[] storage challenges = custodyChallenges[postId];
+        require(challenges.length > 0, "NO_CHALLENGES");
+
+        uint256 idx = _findChallengeIndex(challenges, operator);
+        CustodyChallenge storage challenge = challenges[idx];
+        require(!challenge.responded, "ALREADY_RESPONDED");
+
+        bool ok = verifier.verifyKzgOpening(x, y, pi);
+        challenge.responded = true;
+        challenge.success = ok;
+        emit CustodyProofSubmitted(postId, operator, ok);
+    }
+
     modifier onlyRelay() {
         require(msg.sender == relay, "NOT_RELAY");
         _;
+    }
+
+    function _findChallengeIndex(CustodyChallenge[] storage challenges, address operator) private view returns (uint256) {
+        for (uint256 i = 0; i < challenges.length; i++) {
+            if (challenges[i].operator == operator) return i;
+        }
+        revert("CHALLENGE_MISSING");
     }
 }

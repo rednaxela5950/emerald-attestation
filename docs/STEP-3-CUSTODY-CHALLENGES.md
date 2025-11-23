@@ -13,3 +13,4 @@ Plan:
 
 Progress:
 - Added custody challenge creation per Phase 1 yes-voter (Phase1Passed required) with `CustodyChallengeStarted` events.
+- Added custody proof submission using mock KZG verifier and response tracking.
