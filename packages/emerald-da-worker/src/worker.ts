@@ -3,6 +3,7 @@ import { fetch } from "undici";
 
 export type PostInput = { postId: string; cidHash: string; kzgCommit: string };
 export type ProcessResult = "ok" | "missing" | "mismatch";
+export type Decision = { decision: "yes" | "no"; reason: ProcessResult };
 
 export async function processPost(post: PostInput, baseUrl: string): Promise<ProcessResult> {
     const res = await fetch(`${baseUrl}/blob/${post.cidHash}`);
@@ -12,4 +13,10 @@ export async function processPost(post: PostInput, baseUrl: string): Promise<Pro
     const body = Buffer.from(await res.arrayBuffer());
     const digest = "0x" + crypto.createHash("sha3-256").update(body).digest("hex");
     return digest.toLowerCase() === post.cidHash.toLowerCase() ? "ok" : "mismatch";
+}
+
+export async function decideOnPost(post: PostInput, baseUrl: string): Promise<Decision> {
+    const result = await processPost(post, baseUrl);
+    if (result === "ok") return { decision: "yes", reason: result };
+    return { decision: "no", reason: result };
 }
