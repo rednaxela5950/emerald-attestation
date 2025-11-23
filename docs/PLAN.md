@@ -142,7 +142,7 @@ Goal: Implement the second phase where a random subset of yes‑voters must answ
 
 Goal: Provide an off-chain worker that ties blobs, Relay attestation, and on-chain contracts together, plus a simple storage service.
 
-- [~] 4.1 Implement dummy data service:
+- [x] 4.1 Implement dummy data service:
   - Node + Express/Fastify.
   - `POST /blob` → stores blob in memory/disk; returns `cidHash`.
   - `GET /blob/:cidHash` → returns blob or 404.
