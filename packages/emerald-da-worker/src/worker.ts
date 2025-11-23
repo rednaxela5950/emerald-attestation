@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { Contract, JsonRpcProvider } from "ethers";
 import { fetch } from "undici";
 
 export type PostInput = { postId: string; cidHash: string; kzgCommit: string };
@@ -32,5 +33,16 @@ export async function submitCustodyProof(postId: string, operator: string, adapt
         return;
     }
     console.log(`Submitting custody proof for ${postId} as ${operator} to adapter ${adapterAddress} via ${rpcUrl}`);
-    // Stub: this is where an ethers.js call to submitCustodyProof would go.
+    const provider = new JsonRpcProvider(rpcUrl);
+    const signer = await provider.getSigner();
+    const adapter = new Contract(
+        adapterAddress,
+        ["function submitCustodyProof(bytes32 postId, address operator, bytes calldata x, bytes calldata y, bytes calldata pi) external"],
+        signer
+    );
+    try {
+        await adapter.submitCustodyProof(postId, operator, "0x", "0x", "0x");
+    } catch (err) {
+        console.warn("submitCustodyProof failed (stub)", err);
+    }
 }
