@@ -13,6 +13,7 @@ Progress:
 - Added `processPost` worker helper to fetch blobs, check cid hash, and tests covering ok/mismatch/missing paths.
 - Added config/env placeholders for blob service, RPC, and registry address to prep event wiring.
 - Added registry log parser for `PostCreated` to prep event-driven worker flow.
+- Worker now subscribes to registry logs and routes `PostCreated` to the decision helper.
 
 Next:
 - Hook worker stub to on-chain events (PostCreated, custody) and simulate Relay/custody responses.
