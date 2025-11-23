@@ -1,6 +1,6 @@
 # Step 3 — Custody challenges (Phase 2)
 
-Status: In progress
+Status: Done
 
 Plan:
 - Define challenge storage:
@@ -14,3 +14,7 @@ Plan:
 Progress:
 - Added custody challenge creation per Phase 1 yes-voter (Phase1Passed required) with `CustodyChallengeStarted` events.
 - Added custody proof submission using mock KZG verifier and response tracking.
+- Added finalization that sets posts to `Available` or `Unavailable` based on custody responses.
+
+Result:
+- Phase 2 flow: start challenges after Phase1Passed, accept custody proofs with mock KZG, and finalize registry status on majority success.

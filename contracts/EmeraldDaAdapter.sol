@@ -89,6 +89,26 @@ contract EmeraldDaAdapter {
         emit CustodyProofSubmitted(postId, operator, ok);
     }
 
+    function finalizePostFromCustody(bytes32 postId) external {
+        CustodyChallenge[] storage challenges = custodyChallenges[postId];
+        require(challenges.length > 0, "NO_CHALLENGES");
+
+        uint256 responded;
+        uint256 successes;
+        for (uint256 i = 0; i < challenges.length; i++) {
+            if (challenges[i].responded) {
+                responded++;
+                if (challenges[i].success) successes++;
+            }
+        }
+        require(responded == challenges.length, "PENDING_RESPONSES");
+
+        bool passed = successes * 2 >= challenges.length;
+        Status finalStatus = passed ? Status.Available : Status.Unavailable;
+        registry.setStatusFromDa(postId, finalStatus);
+        emit PostFinalized(postId, finalStatus);
+    }
+
     modifier onlyRelay() {
         require(msg.sender == relay, "NOT_RELAY");
         _;

@@ -95,4 +95,37 @@ contract EmeraldDaAdapterTest is TestBase {
         assertTrue(challenges[0].responded, "responded");
         assertTrue(challenges[0].success, "success");
     }
+
+    function testFinalizeCustodySetsAvailableOnSuccess() external {
+        bytes32 cidHash = keccak256("cid6");
+        bytes32 kzgCommit = keccak256("kzg6");
+        bytes32 postId = registry.createPost(cidHash, kzgCommit);
+        address[] memory voters = new address[](2);
+        voters[0] = address(0x1);
+        voters[1] = address(0x2);
+        adapter.handleDaAttestation(postId, cidHash, kzgCommit, voters, 2, 2);
+        adapter.startCustodyChallenges(postId);
+
+        adapter.submitCustodyProof(postId, voters[0], "", "", "");
+        adapter.submitCustodyProof(postId, voters[1], "", "", "");
+        adapter.finalizePostFromCustody(postId);
+        Post memory post = registry.getPost(postId);
+        assertEq(uint256(post.status), uint256(Status.Available), "available");
+    }
+
+    function testFinalizeCustodySetsUnavailableOnFailure() external {
+        bytes32 cidHash = keccak256("cid7");
+        bytes32 kzgCommit = keccak256("kzg7");
+        bytes32 postId = registry.createPost(cidHash, kzgCommit);
+        address[] memory voters = new address[](1);
+        voters[0] = address(0x1);
+        adapter.handleDaAttestation(postId, cidHash, kzgCommit, voters, 1, 1);
+        adapter.startCustodyChallenges(postId);
+        verifier.setShouldVerify(false);
+
+        adapter.submitCustodyProof(postId, voters[0], "", "", "");
+        adapter.finalizePostFromCustody(postId);
+        Post memory post = registry.getPost(postId);
+        assertEq(uint256(post.status), uint256(Status.Unavailable), "unavailable");
+    }
 }
