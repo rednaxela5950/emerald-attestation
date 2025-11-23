@@ -15,12 +15,13 @@ export async function processPost(post: PostInput, baseUrl: string): Promise<Pro
     return digest.toLowerCase() === post.cidHash.toLowerCase() ? "ok" : "mismatch";
 }
 
-export async function decideOnPost(post: PostInput, baseUrl: string): Promise<Decision> {
+export async function decideOnPost(post: PostInput, baseUrl: string, lazy = false): Promise<Decision> {
+    if (lazy) return { decision: "yes", reason: "ok" };
     const result = await processPost(post, baseUrl);
     if (result === "ok") return { decision: "yes", reason: result };
     return { decision: "no", reason: result };
 }
 
-export async function handlePostCreated(post: PostInput, baseUrl: string): Promise<Decision> {
-    return decideOnPost(post, baseUrl);
+export async function handlePostCreated(post: PostInput, baseUrl: string, lazy = false): Promise<Decision> {
+    return decideOnPost(post, baseUrl, lazy);
 }

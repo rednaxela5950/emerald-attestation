@@ -21,7 +21,11 @@ export async function main() {
     const event = parsePostCreated(log);
     if (event) {
       console.log(`PostCreated received for ${event.postId}`);
-      await handlePostCreated({ postId: event.postId, cidHash: event.cidHash, kzgCommit: event.kzgCommit }, cfg.blobServiceUrl);
+      await handlePostCreated(
+        { postId: event.postId, cidHash: event.cidHash, kzgCommit: event.kzgCommit },
+        cfg.blobServiceUrl,
+        cfg.lazyMode
+      );
     }
   });
 }
