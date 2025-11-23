@@ -72,11 +72,11 @@ Goal: Have on-chain contracts that represent posts, their DA status, and the ada
 
 Goal: Wire `EmeraldDaAdapter` to accept and process a Symbiotic Relay DA attestation, acting as the Phase 1 yes/no vote.
 
-- [~] 2.1 Define the on-chain function that Settlement/Relay calls, e.g.:
+- [x] 2.1 Define the on-chain function that Settlement/Relay calls, e.g.:
   - `function handleDaAttestation(bytes32 postId, bytes32 cidHash, bytes32 kzgCommit, address[] yesVoters, uint256 yesStake, uint256 totalStake) external`
   - For now, assume `msg.sender` is a trusted Settlement/Relay adapter contract (mock this in tests).
 
-- [~] 2.2 Implement Phase 1 decision logic:
+- [x] 2.2 Implement Phase 1 decision logic:
   - Check that `cidHash` and `kzgCommit` match the post.
   - Check that `yesStake` and `totalStake` are non-zero and `yesStake >= threshold(totalStake)`.
   - On success:
@@ -85,12 +85,12 @@ Goal: Wire `EmeraldDaAdapter` to accept and process a Symbiotic Relay DA attesta
   - On failure:
     - Update post status to `Phase1Failed` or `Unavailable`.
 
-- [~] 2.3 Add tests that:
+- [x] 2.3 Add tests that:
   - Mock a valid Relay attestation and ensure Phase 1 passes correctly.
   - Mock an attestation with insufficient yesStake and ensure Phase 1 fails.
   - Mock mismatched `(cidHash, kzgCommit)` and ensure it is rejected.
 
-- [~] 2.4 Commit with message like `feat: wire EmeraldDaAdapter to Relay Phase1 attestation (mocked)`.
+- [x] 2.4 Commit with message like `feat: wire EmeraldDaAdapter to Relay Phase1 attestation (mocked)`.
 
 **Detailed spec:** `docs/STEP-2-RELAY-PHASE1.md`.
 
