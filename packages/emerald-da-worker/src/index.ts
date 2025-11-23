@@ -1,5 +1,5 @@
 import { createBlobApp } from "./blobService";
-import { handlePostCreated } from "./worker";
+import { handlePostCreated, submitCustodyProof } from "./worker";
 import { loadConfig } from "./config";
 import { createProvider, subscribeToLogs } from "./provider";
 import { parsePostCreated } from "./registry";
@@ -34,11 +34,7 @@ export async function main() {
     const chall = parseCustodyChallenge(log);
     if (chall) {
       console.log(`CustodyChallenge for ${chall.postId} operator ${chall.operator} index ${chall.challengeIndex}`);
-      if (cfg.lazyMode) {
-        console.log("Lazy mode: skipping custody proof");
-      } else {
-        console.log("Would submit custody proof here (stub)");
-      }
+      await submitCustodyProof(chall.postId, chall.operator, cfg.adapterAddress, cfg.rpcUrl, cfg.lazyMode);
     }
   });
 }

@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "dev": "ts-node src/index.ts",
-    "test": "ts-node test/worker.test.ts && ts-node test/registry.test.ts && ts-node test/adapter.test.ts"
+    "test": "ts-node test/worker.test.ts && ts-node test/registry.test.ts && ts-node test/adapter.test.ts && ts-node test/custody.test.ts"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

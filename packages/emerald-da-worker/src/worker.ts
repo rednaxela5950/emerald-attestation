@@ -25,3 +25,12 @@ export async function decideOnPost(post: PostInput, baseUrl: string, lazy = fals
 export async function handlePostCreated(post: PostInput, baseUrl: string, lazy = false): Promise<Decision> {
     return decideOnPost(post, baseUrl, lazy);
 }
+
+export async function submitCustodyProof(postId: string, operator: string, adapterAddress: string, rpcUrl: string, lazy = false) {
+    if (lazy) {
+        console.log(`Lazy worker skipping custody proof for ${postId}`);
+        return;
+    }
+    console.log(`Submitting custody proof for ${postId} as ${operator} to adapter ${adapterAddress} via ${rpcUrl}`);
+    // Stub: this is where an ethers.js call to submitCustodyProof would go.
+}
