@@ -14,6 +14,7 @@ Progress:
 - Added config/env placeholders for blob service, RPC, and registry address to prep event wiring.
 - Added registry log parser for `PostCreated` to prep event-driven worker flow.
 - Worker now subscribes to registry logs and routes `PostCreated` to the decision helper.
+- Added adapter log parsers and subscription to custody challenges; lazy mode skips proofs, eager mode stubs proof submission.
 
 Next:
 - Hook worker stub to on-chain events (PostCreated, custody) and simulate Relay/custody responses.
