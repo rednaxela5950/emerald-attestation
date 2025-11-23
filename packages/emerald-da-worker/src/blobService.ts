@@ -8,7 +8,7 @@ export function createBlobApp() {
   app.use(express.raw({ type: "*/*", limit: "10mb" }));
 
   app.post("/blob", (req, res) => {
-    const body = Buffer.from(req.body);
+    const body = Buffer.isBuffer(req.body) ? req.body : Buffer.from(req.body);
     const cidHash = "0x" + crypto.createHash("sha3-256").update(body).digest("hex");
     blobs.set(cidHash, body);
     res.json({ cidHash });
